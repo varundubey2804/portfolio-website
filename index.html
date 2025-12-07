@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varun Dubey | AI Engineer</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #030014; 
+            --card-bg: rgba(23, 25, 56, 0.6);
+            --primary: #a855f7; /* Purple */
+            --secondary: #ec4899; /* Pink */
+            --accent: #3b82f6; /* Blue */
+            --gold: #fbbf24; 
+            --text-color: #ffffff;
+            --text-muted: #9ca3af;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* 3D Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; 
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background: rgba(3, 0, 20, 0.4);
+            border-bottom: 1px solid var(--glass-border);
+            transition: 0.3s;
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; }
+        .highlight { color: var(--primary); }
+
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links a { text-decoration: none; color: var(--text-color); font-weight: 500; transition: 0.3s; position: relative;}
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        .btn-primary {
+            padding: 10px 25px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(168, 85, 247, 0.8); }
+
+        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; color: white; }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .badge {
+            border: 1px solid var(--primary);
+            padding: 8px 18px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 25px;
+            background: rgba(168, 85, 247, 0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 4s linear infinite;
+        }
+
+        @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+
+        .typing-container {
+            font-size: 2rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            min-height: 40px;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Sections */
+        .section { padding: 100px 10%; }
+        .section-title { text-align: center; font-size: 2.8rem; margin-bottom: 70px; }
+
+        /* Grid Layouts */
+        .timeline-grid, .skills-grid, .projects-grid, .achievements-grid {
+            display: grid;
+            gap: 30px;
+        }
+        .timeline-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        .skills-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+        .projects-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        .achievements-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-top: 50px; }
+
+        .tilt-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            transition: transform 0.1s;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tilt-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+        .tilt-card:hover::before { left: 100%; }
+
+        .skill-card { text-align: center; }
+        .skill-card i { font-size: 2.5rem; color: var(--secondary); margin-bottom: 15px; }
+
+        .project-card { padding: 0; display: flex; flex-direction: column; }
+        .card-image {
+            height: 200px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        .card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .gradient-1 { background: linear-gradient(45deg, #4f46e5, #9333ea); }
+        .gradient-2 { background: linear-gradient(45deg, #059669, #10b981); }
+        .gradient-3 { background: linear-gradient(45deg, #db2777, #f472b6); }
+        .gradient-4 { background: linear-gradient(45deg, #2563eb, #3b82f6); }
+
+        /* --- SLIDER STYLES --- */
+        .slider-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--glass-border);
+            background: rgba(15, 16, 33, 0.8);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 500px; 
+        }
+
+        .slide {
+            min-width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        .slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(3, 0, 20, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .slide-caption h3 { color: var(--primary); font-size: 1.4rem; margin-bottom: 5px; }
+        .slide-caption p { color: #d1d5db; font-size: 0.95rem; }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            font-size: 1.5rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider-btn:hover { background: var(--primary); }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .dot.active { background: var(--primary); transform: scale(1.2); }
+
+        /* Achievement Text Cards */
+        .achievement-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .icon-box {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(168, 85, 247, 0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            flex-shrink: 0;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .tags span {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin-right: 6px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        /* CONTACT FORM STYLES */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-info h3 { font-size: 1.8rem; margin-bottom: 10px; }
+        .contact-info p { color: var(--text-muted); margin-bottom: 30px; }
+        .contact-details .item { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .contact-details i { color: var(--primary); font-size: 1.2rem; }
+
+        .contact-form { display: flex; flex-direction: column; gap: 20px; }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            transition: 0.3s;
+        }
+        .input-group textarea { resize: vertical; height: 120px; }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Resume Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-overlay.open { display: flex; opacity: 1; }
+
+        .resume-modal {
+            background: #0f1021;
+            width: 90%; max-width: 800px;
+            max-height: 90vh;
+            border-radius: 15px;
+            border: 1px solid var(--primary);
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp { from { transform: translateY(50px); } to { transform: translateY(0); } }
+
+        .modal-header {
+            padding: 20px;
+            background: rgba(168, 85, 247, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
+        }
+
+        .close-modal { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        
+        .resume-content { padding: 30px; color: #e2e8f0; line-height: 1.8; }
+        .resume-section { margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .resume-section h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 1px; }
+        .resume-item { margin-bottom: 15px; }
+        .resume-item h4 { font-size: 1.1rem; color: #fff; }
+        .resume-item .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; display: block; }
+
+        /* Footer */
+        footer {
+            padding: 30px 20px; text-align: center;
+            border-top: 1px solid var(--glass-border);
+            background: linear-gradient(to top, #020010, transparent);
+            margin-top: 50px;
+        }
+
+        /* Mobile Responsive Fixes */
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .hamburger { display: block; z-index: 101; }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                right: 0;
+                width: 100%;
+                background: rgba(3, 0, 20, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 20px 0;
+                text-align: center;
+                border-bottom: 1px solid var(--glass-border);
+            }
+
+            .nav-links.active { display: flex; }
+            .nav-links li { margin: 15px 0; }
+            
+            .hero-btns { flex-direction: column; }
+            .contact-container { grid-template-columns: 1fr; }
+            .slider-wrapper { height: 350px; } /* Smaller slider on mobile */
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="modal-overlay" id="resumeModal">
+        <div class="resume-modal">
+            <div class="modal-header">
+                <h2>Resume</h2>
+                <button class="close-modal" onclick="toggleModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="resume-content">
+                <div class="resume-section">
+                    <h1 style="font-size: 2rem; color: white;">VARUN DUBEY</h1>
+                    <p style="color: var(--text-muted);">AI/ML Enthusiast | Computer Vision | Deep Learning</p>
+                    <p style="font-size: 0.9rem; margin-top: 5px;">
+                        <i class="fas fa-phone"></i> +91 9971508055 | 
+                        <i class="fas fa-envelope"></i> varundubey282004@gmail.com
+                    </p>
+                    <p style="font-size: 0.9rem;">Delhi, India</p>
+                </div>
+
+                <div class="resume-section">
+                    <h3>Education</h3>
+                    <div class="resume-item">
+                        <h4>B.Tech in Artificial Intelligence & Machine Learning</h4>
+                        <span class="meta">GGSIPU (VIPS-TC) | 2023 - 2027</span>
+                        <p>CGPA: 8.549</p>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h3>Experience</h3>
+                    <div class="resume-item">
+                        <h4>Machine Learning Engineer</h4>
+                        <span class="meta">RAAV Tech Labs | June 2025 - August 2025</span>
+                        <ul>
+                            <li>Developed edge-deployed ML models for agriculture and healthcare.</li>
+                            <li>Optimized datasets and implemented model compression for mobile devices.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="resume-section">
+                    <h3>Skills</h3>
+                    <p><strong>Languages:</strong> Python, C++, Java, JavaScript</p>
+                    <p><strong>AI/ML:</strong> TensorFlow, PyTorch, Scikit-learn, LangChain, YOLO, OpenCV, Mediapipe</p>
+                    <p><strong>Tools:</strong> Git, Docker, Gradio, Streamlit, n8n, Vector DBs</p>
+                </div>
+
+                <div class="resume-section">
+                    <h3>Projects</h3>
+                    <div class="resume-item">
+                        <h4>Veena - AI Voice Agent</h4>
+                        <p>Real-time voice-to-voice agent using RAG and Whisper.</p>
+                    </div>
+                    <div class="resume-item">
+                        <h4>Recyclopidia</h4>
+                        <p>YOLO-based waste segregation model.</p>
+                    </div>
+                      <div class="resume-item">
+                        <h4>Flipkart Product Recommendation</h4>
+                        <p>E-commerce recommendation engine based on user behavior.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">Varun<span class="highlight">Dubey.</span></div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#achievements">Achievements</a></li>
+            <li><button onclick="toggleModal()" style="background:none; border:none; color:inherit; font:inherit; cursor:pointer;">Resume</button></li>
+            <li><a href="#contact" class="btn-primary">Contact</a></li>
+        </ul>
+        <div class="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="badge">🚀 AI Engineer & Full Stack Developer</div>
+            <h1>Hi, I'm <span class="gradient-text">Varun Dubey</span></h1>
+            <h2 class="typing-container">Building <span id="typing-text"></span><span class="cursor">|</span></h2>
+            <div class="hero-btns">
+                <a href="#projects" class="btn-primary">View My Work</a>
+                <button onclick="toggleModal()" class="btn-primary"><i class="fas fa-file-alt"></i> View Resume</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section reveal">
+        <h2 class="section-title">Experience & <span class="highlight">Journey</span></h2>
+        <div class="timeline-grid">
+            <div class="tilt-card">
+                <h3 class="role" style="color:var(--primary)">Machine Learning Engineer Intern</h3>
+                <h4 style="color:white">RAAV Tech Labs</h4>
+                <span class="date" style="color:var(--text-muted); font-size:0.9rem; font-style:italic; display:block; margin-bottom:15px;">June 2025 - August 2025</span>
+                <ul style="color:#d1d5db; margin-left:20px;">
+                    <li>Deployed edge ML models for agriculture/healthcare.</li>
+                    <li>Built pipelines for large-scale data labeling.</li>
+                    <li>Implemented model distillation for mobile devices.</li>
+                </ul>
+            </div>
+            <div class="tilt-card">
+                <h3 class="role" style="color:var(--primary)">B.Tech in AI & ML</h3>
+                <h4 style="color:white">GGSIPU (VIPS-TC)</h4>
+                <span class="date" style="color:var(--text-muted); font-size:0.9rem; font-style:italic; display:block; margin-bottom:15px;">2023 - 2027 | CGPA: 8.55</span>
+                <ul style="color:#d1d5db; margin-left:20px;">
+                    <li>Focus on Deep Learning & Neuro-Symbolic AI.</li>
+                    <li>13+ Hackathon Participant.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="section reveal">
+        <h2 class="section-title">Technical <span class="highlight">Stack</span></h2>
+        <div class="skills-grid">
+            <div class="tilt-card skill-card">
+                <i class="fas fa-brain"></i>
+                <h3>Generative AI</h3>
+                <p>LangChain, LangGraph, RAG, Ollama, Whisper.</p>
+            </div>
+            <div class="tilt-card skill-card">
+                <i class="fas fa-eye"></i>
+                <h3>Computer Vision</h3>
+                <p>YOLO, OpenCV, MediaPipe, DeepFace.</p>
+            </div>
+            <div class="tilt-card skill-card">
+                <i class="fas fa-code"></i>
+                <h3>Core</h3>
+                <p>Python, C++, Java, JavaScript.</p>
+            </div>
+            <div class="tilt-card skill-card">
+                <i class="fas fa-layer-group"></i>
+                <h3>Tools</h3>
+                <p>Docker, Git, Gradio, Streamlit, n8n.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="section reveal">
+        <h2 class="section-title">Featured <span class="highlight">Projects</span></h2>
+        <div class="projects-grid">
+            
+            <div class="tilt-card project-card">
+                <div class="card-image gradient-1"></div>
+                <div class="card-content">
+                    <h3>Veena - AI Voice Agent</h3>
+                    <p>Real-time voice-to-voice agent using RAG and Whisper for empathetic conversation.</p>
+                    <div class="tags">
+                        <span>LangChain</span><span>Ollama</span><span>Whisper</span>
+                    </div>
+                    <a href="https://github.com/varundubey2804" target="_blank" class="link" style="margin-top:auto">View Code <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+            <div class="tilt-card project-card">
+                <div class="card-image gradient-2"></div>
+                <div class="card-content">
+                    <h3>Recyclopidia</h3>
+                    <p>YOLO-based waste segregation model that classifies waste as recyclable/non-recyclable.</p>
+                    <div class="tags">
+                        <span>YOLO</span><span>OpenCV</span><span>Deep Learning</span>
+                    </div>
+                    <a href="https://github.com/varundubey2804/recyclopidia" target="_blank" class="link" style="margin-top:auto">View Code <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+            <div class="tilt-card project-card">
+                <div class="card-image gradient-3"></div>
+                <div class="card-content">
+                    <h3>Flipkart Recommendation</h3>
+                    <p>E-commerce recommendation engine analyzing product features and user history.</p>
+                    <div class="tags">
+                        <span>ML</span><span>Pandas</span><span>Scikit-learn</span>
+                    </div>
+                    <a href="https://github.com/varundubey2804/FLIPKART_PRODUCT_RECOMMENDATION" target="_blank" class="link" style="margin-top:auto">View Code <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+            <div class="tilt-card project-card">
+                <div class="card-image gradient-4"></div>
+                <div class="card-content">
+                    <h3>Falcon Dataset Model</h3>
+                    <p>LLM fine-tuning implementation using Falcon architecture and custom datasets.</p>
+                    <div class="tags">
+                        <span>LLM</span><span>Fine-tuning</span><span>Transformers</span>
+                    </div>
+                    <a href="https://github.com/varundubey2804/Falcon_dataset_model" target="_blank" class="link" style="margin-top:auto">View Code <i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="achievements" class="section reveal">
+        <h2 class="section-title">Achievements & <span class="highlight">Certifications</span></h2>
+        
+        <div class="slider-container">
+            <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+            
+            <div class="slider-wrapper">
+                
+                <div class="slide">
+                    <img src="images/Bestpaper.jpg" alt="Best Paper Award">
+                    <div class="slide-caption">
+                        <h3>Best Paper Award</h3>
+                        <p>International Conference on Data-Processing and Networking (ICDPN-2025).</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/LLM Engineering.jpg" alt="LLM Engineering Certificate">
+                    <div class="slide-caption">
+                        <h3>LLM Engineering</h3>
+                        <p>Master AI, Large Language Models & Agents. Udemy.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/BigDataBootCamp.jpg" alt="Big Data & Data Science Bootcamp">
+                    <div class="slide-caption">
+                        <h3>Big Data & Data Science</h3>
+                        <p>Bootcamp conducted by C-DAC, NOIDA.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/21days21PROJECT.jpg" alt="ML, Deep Learning & GenAI Certificate">
+                    <div class="slide-caption">
+                        <h3>ML & Deep Learning</h3>
+                        <p>21 Projects, 21 Days Course. GeeksforGeeks.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/A2KHACKFEST.jpg" alt="A2HACKFEST Certificate">
+                    <div class="slide-caption">
+                        <h3>A2HACKFEST</h3>
+                        <p>"Ideas that Hack. AI Agents that Build." Organized by AugmentAppz.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                     <img src="images/CodeClash.jpg" alt="CodeClash 2.0 Certificate">
+                    <div class="slide-caption">
+                        <h3>CodeClash 2.0</h3>
+                        <p>Team Hackstreet. Organized by GGSIPU.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/Codex.jpg" alt="Codex 2.0 Certificate">
+                    <div class="slide-caption">
+                        <h3>Codex 2.0</h3>
+                        <p>Organized by Panipat Institute of Engineering & Technology.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/InsecureBotQuest2025.jpg" alt="InsureBot Quest 2025 Certificate">
+                    <div class="slide-caption">
+                        <h3>InsureBot Quest 2025</h3>
+                        <p>Conversational Bot Hackathon. Organized by ValuEnable Pvt. Ltd.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/AIforQuality.jpg" alt="AI for Quality Hackathon Certificate">
+                    <div class="slide-caption">
+                        <h3>'AI for Quality' Hackathon</h3>
+                        <p>IFQM Conclave for Academia - 2025.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/HP power lab.jpg" alt="HP Power Lab 2.0 Certificate">
+                    <div class="slide-caption">
+                        <h3>HP Power Lab 2.0</h3>
+                        <p>Round 1: Online Assessment. Organized by HPCL.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/Hackmait.jpg" alt="HackwithMAIT 6.0 Certificate">
+                    <div class="slide-caption">
+                        <h3>HackwithMAIT 6.0</h3>
+                        <p>Organized by Maharaja Agrasen Institute of Technology.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/CodeforBharat.jpg" alt="Code For Bharat Season 2 Certificate">
+                    <div class="slide-caption">
+                        <h3>Code For Bharat Season 2</h3>
+                        <p>Team GenAlpha. Organized by Tech Masters India.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/DataVerse.jpg" alt="DataVerse Certificate">
+                    <div class="slide-caption">
+                        <h3>DataVerse</h3>
+                        <p>Team Blackdagons. Organized by KIET Group of Institutions.</p>
+                    </div>
+                </div>
+
+                <div class="slide">
+                    <img src="images/InnoVotex.jpg" alt="InnoVortex 3.0 Certificate">
+                    <div class="slide-caption">
+                        <h3>InnoVortex 3.0</h3>
+                        <p>Team HackOps. Organized by TechNeeds IGDTUW.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="slider-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+
+        <div class="achievements-grid">
+            
+            <div class="tilt-card achievement-card">
+                <div class="icon-box"><i class="fas fa-code-branch"></i></div>
+                <div>
+                    <h3>13+ Hackathons</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted)">Veteran Participant & Runner-Up. Solving complex problems under pressure.</p>
+                </div>
+            </div>
+
+            <div class="tilt-card achievement-card">
+                <div class="icon-box"><i class="fas fa-trophy"></i></div>
+                <div>
+                    <h3>Best Paper Award</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted)">International Conference on Data-Processing and Networking (ICDPN-2025).</p>
+                </div>
+            </div>
+
+            <div class="tilt-card achievement-card">
+                <div class="icon-box"><i class="fas fa-certificate"></i></div>
+                <div>
+                    <h3>LLM Engineering</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted)">Master AI, Large Language Models & Agents (Udemy).</p>
+                </div>
+            </div>
+
+            <div class="tilt-card achievement-card">
+                <div class="icon-box"><i class="fas fa-database"></i></div>
+                <div>
+                    <h3>Data Science</h3>
+                    <p style="font-size:0.9rem; color:var(--text-muted)">Big Data & Data Science Bootcamp (C-DAC, NOIDA).</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact" class="section reveal">
+        <h2 class="section-title">Contact <span class="highlight">Me</span></h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Let's Collaborate</h3>
+                <p>Have an idea or want to discuss AI? Send me a message, and I'll get back to you as soon as possible.</p>
+                
+                <div class="contact-details">
+                    <div class="item">
+                        <i class="fas fa-envelope"></i>
+                        <span>varundubey282004@gmail.com</span>
+                    </div>
+                    <div class="item">
+                        <i class="fas fa-phone"></i>
+                        <span>+91 9971508055</span>
+                    </div>
+                    <div class="item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Delhi, India</span>
+                    </div>
+                </div>
+
+                <div class="socials" style="margin-top: 30px; text-align: left;">
+                    <a href="https://github.com/varundubey2804" target="_blank" style="margin: 0 15px 0 0;"><i class="fab fa-github"></i></a>
+                    <a href="https://linkedin.com/in/varun-dubey-1292a230a" target="_blank" style="margin: 0 15px;"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <form class="contact-form" id="supabaseForm">
+                <div class="input-group">
+                    <input type="text" id="name" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Your Email" required>
+                </div>
+                <div class="input-group">
+                    <textarea id="message" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Send Message <i class="fas fa-paper-plane"></i></button>
+                <p id="formStatus" style="margin-top:10px; font-size:0.9rem; display:none;"></p>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">© 2025 Varun Dubey. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // --- 1. Supabase Logic ---
+        const supabaseUrl = 'https://psxfnlredrkeyrwkbfot.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBzeGZubHJlZHJrZXlyd2tiZm90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwMzQ3MjgsImV4cCI6MjA4MDYxMDcyOH0.XnzaeLt-QaukJvFyS-MOy9D8JMg49xARwO1jOI5J1r4';
+        
+        let supabase;
+        try {
+            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        } catch(e) { console.log("Supabase not init yet"); }
+
+        const form = document.getElementById('supabaseForm');
+        const statusMsg = document.getElementById('formStatus');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            statusMsg.style.display = 'block';
+            statusMsg.textContent = "Sending...";
+            statusMsg.style.color = "#fbbf24";
+
+            try {
+                const { error } = await supabase
+                    .from('messages')
+                    .insert([{ name, email, message }]);
+
+                if (error) throw error;
+
+                statusMsg.textContent = "Message sent successfully!";
+                statusMsg.style.color = "#059669"; 
+                form.reset();
+            } catch (error) {
+                console.error('Error:', error);
+                statusMsg.textContent = "Error sending message. Please try again.";
+                statusMsg.style.color = "#ef4444"; 
+            }
+        });
+
+        // --- 2. Mobile Menu Logic ---
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // --- 3. Resume Modal Logic ---
+        function toggleModal() {
+            const modal = document.getElementById('resumeModal');
+            if (modal.classList.contains('open')) {
+                modal.classList.remove('open');
+                document.body.style.overflow = 'auto'; 
+            } else {
+                modal.classList.add('open');
+                document.body.style.overflow = 'hidden'; 
+            }
+        }
+
+        // --- 4. Scroll Reveal ---
+        window.addEventListener('scroll', reveal);
+        function reveal() {
+            var reveals = document.querySelectorAll('.reveal');
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        reveal();
+
+        // --- 5. 3D Tilt Effect ---
+        const cards = document.querySelectorAll('.tilt-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; 
+                const y = e.clientY - rect.top;  
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10; 
+                const rotateY = ((x - centerX) / centerX) * 10;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // --- 6. Typing Effect ---
+        const words = ["Intelligent Agents", "Computer Vision Systems", "LLM Applications"];
+        let i = 0;
+        function typeWriter() {
+            const element = document.getElementById("typing-text");
+            const currentWord = words[i % words.length];
+            element.textContent = currentWord;
+            setTimeout(() => { i++; typeWriter(); }, 3000); 
+        }
+        typeWriter();
+
+        // --- 7. Three.js Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 1800;
+        const posArray = new Float32Array(starsCount * 3);
+        for(let i = 0; i < starsCount * 3; i++) { posArray[i] = (Math.random() - 0.5) * 100; }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const starsMaterial = new THREE.PointsMaterial({ size: 0.15, color: 0xffffff, transparent: true, opacity: 0.8 });
+        const starMesh = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starMesh);
+
+        let shootingStars = [];
+        function createShootingStar() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array([0,0,0, -2,2,0]); 
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const material = new THREE.LineBasicMaterial({ color: 0xa855f7 });
+            const line = new THREE.Line(geometry, material);
+            line.position.x = (Math.random() - 0.5) * 50;
+            line.position.y = (Math.random() - 0.5) * 50;
+            line.position.z = (Math.random() * 10);
+            scene.add(line);
+            shootingStars.push({ mesh: line, life: 0 });
+        }
+
+        camera.position.z = 20;
+        let mouseX = 0; let mouseY = 0;
+        document.addEventListener('mousemove', (event) => { mouseX = event.clientX; mouseY = event.clientY; });
+
+        const animate = () => {
+            requestAnimationFrame(animate);
+            starMesh.rotation.y += 0.0005;
+            starMesh.rotation.x += 0.0002;
+            starMesh.rotation.y += (mouseX * 0.0001 - starMesh.rotation.y) * 0.05;
+            starMesh.rotation.x += (mouseY * 0.0001 - starMesh.rotation.x) * 0.05;
+
+            if(Math.random() > 0.98) createShootingStar();
+            
+            for(let i = shootingStars.length - 1; i >= 0; i--) {
+                let s = shootingStars[i];
+                s.mesh.position.x += 0.3; 
+                s.mesh.position.y -= 0.3; 
+                s.life++;
+                if(s.life > 50) {
+                    scene.remove(s.mesh);
+                    shootingStars.splice(i, 1);
+                }
+            }
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 8. Slider Logic ---
+        const sliderWrapper = document.querySelector('.slider-wrapper');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+        let currentSlide = 0;
+
+        function updateSlider() {
+            sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlider();
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider();
+            });
+        });
+
+        // Auto play slider
+        setInterval(nextSlide, 5000); 
+
+    </script>
+</body>
+</html>
